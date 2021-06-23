@@ -1,0 +1,28 @@
+-- Use aggregate function to find out some challenge 
+
+SELECT * FROM film;
+
+-- What is the minimum value of the replacement cost? 
+
+	SELECT MIN(replacement_cost) FROM film; 
+	-- $9.99
+
+-- What is maximum replacement cost we can occur? 
+
+	SELECT MAX(replacement_cost) FROM film;
+	-- $29.99
+	
+-- you can also display both min and max at the same time
+
+	SELECT MIN(replacement_cost), MIN(replacement_cost) FROM film;
+
+-- Use AVG and ROUND function to find out the average repalcement cost with 2 decimal places
+
+	SELECT ROUND(AVG(replacement_cost),2) FROM film;
+	-- 19.98
+	
+--  What is total sum for replacement cost? 
+
+	SELECT SUM(replacement_cost) FROM film;
+	-- $19984.00
+	

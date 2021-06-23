@@ -1,0 +1,61 @@
+-- HAVING clause 
+
+-- The HAVING clause allows us to filter after an aggregation has already taken place, which is after
+-- the GROUP BY call. 
+
+-- EXAMPLE 
+
+--	SELECT company, SUM(sales)
+-- 	FROM finance_table
+--	WHERE company != 'Google'
+--	GROUP BY company
+
+-- We cannot use WHERE to filter based off of aggregate results, because those happen after a WHERE
+-- is executed. To solve this you can use HAVING. HAVING allows us to use the aggregate result as a 
+-- filter along with a GROUP BY.
+
+--	SELECT company, SUM(sales)
+-- 	FROM finance_table
+--	WHERE company != 'Google'
+--	GROUP BY company
+--  HAVING SUM(sales) > 1000;
+
+-- let's try with dvd-rental data
+
+	SELECT customer_id, SUM(amount) FROM payment
+	GROUP BY customer_id
+	HAVING SUM(amount) > 100;
+
+-- Another example. Find the store that have more than 300 customers 
+
+	SELECT store_id, COUNT(customer_id) FROM customer
+	GROUP BY store_id 
+	HAVING COUNT(customer_id) > 300;
+	
+	
+----------------------------------------- HAVING challenge -----------------------------------------
+
+-- Task 1: We are launching a platnium service for our most loyal customers. We will assign platnium
+-- status to customers that have had 40 or more transaction payments. 
+-- What customer_ids are eligible for platnium? 
+
+	SELECT customer_id, COUNT(amount) FROM payment
+	GROUP BY customer_id
+	HAVING COUNT(amount) >= 40;
+	-- customer_id 144 = 40
+	-- customer_id 526 = 42
+	-- customer_id 148 = 45
+	
+-- Task 2: What are the customer ids of customers who have spent more than $100 in payment 
+-- transaction with our staff_id member 2? 
+
+	SELECT staff_id, customer_id, SUM(amount) FROM payment
+	WHERE staff_id != 1
+	GROUP BY staff_id, customer_id
+	HAVING SUM(amount) > 100;
+	
+	-- customer id 187, 148, 211, 522, 526
+	
+
+
+	

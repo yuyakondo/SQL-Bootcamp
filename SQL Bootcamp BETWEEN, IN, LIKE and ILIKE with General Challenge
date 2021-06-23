@@ -1,0 +1,193 @@
+-- BETWEEN operator can be used to match a value against a range of values: # BETWEEN low AND high
+-- And this essentially going to be condition you can tag along with a WHERE statement. 
+
+-- The BETWEEN operator is the same as: 
+
+-- value >= low AND value <= high
+-- value BETWEEN low AND high 
+
+-- You can also combine BETWEEN with the NOT logical operator: 
+
+-- value NOT BETWEEN low AND high 
+
+-- The BETWEEN operater can also used with dates. Note that you need format dates in the ISO 8601 
+-- standard format, which is YYYY-MM-DD. 
+
+-- date BETWEEN '2007-01-01' AND '2007-02-01'
+
+-- When we using BETWEEN operator with dates that also include timestamp information, pay attention 
+-- to using BETWEEN vs <= >= comparison operators, due to the fact thtat datetime starts at 0:00
+
+--	check payment info
+	SELECT * FROM payment;
+	
+-- check the amount of paymetn between 8 to 9 
+
+	SELECT * FROM payment 
+	WHERE amount BETWEEN 8 AND 9; 
+	
+-- How many number of transaction from above? 
+
+	SELECT COUNT(*) from payment 
+	WHERE amount BETWEEN 8 AND 9; 
+	-- 439 transactions
+	
+-- How many number of transaction NOT between 8 and 9? 
+
+	SELECT COUNT(*) FROM payment 
+	WHERE amount NOT BETWEEN 8 AND 9;
+	-- 14157
+	
+-- Let's try the date of payments between first half of February 2007 
+
+	SELECT * FROM payment
+	WHERE payment_date BETWEEN '2007-02-01' AND '2007-02-15';
+-----------------------------------------------------------------------------------------------------
+
+-- In certain cases you want to ckec for multiple possible value options, for example, if a users name
+-- shows up IN a list of known names. We can use the IN operator to create a condition that checks to
+-- see if a value in included in a list of multiple options. 
+
+-- General Syntax for IN operator: 
+
+-- value IN (option 1, option 2, ....option_n)
+
+-- Example: SELECT color FROM table WHERE color IN ('red', 'blue');
+
+-- You can also combine with NOT operator. SELECT color FROM table WHERE color NOT IN(options);
+
+	SELECT * FROM payment;
+	
+-- what is our unique amount of payment 
+
+	SELECT DISTINCT(amount) FROM payment
+	ORDER BY amount;
+	
+-- collect the data for amount that contain only 0.99, 1.98, 1.99
+
+	SELECT * FROM payment
+	WHERE amount IN (0.99, 1.98, 1.99);
+	
+-- How many payment occur with these values? 
+
+	SELECT COUNT(*) FROM payment 
+	WHERE amount IN (0.99, 1.98, 1.99);
+	-- Anw: 3301
+
+-- How many payment were not with these values? 
+
+	SELECT COUNT(*) FROM payment 
+	WHERE amount NOT IN (0.99, 1.98, 1.99);
+	-- Ans: 11295
+
+-- Let's try with string with IN 
+
+	SELECT * FROM customer
+	WHERE first_name IN ('John', 'Jake', 'Julie');
+	
+-- similiar for NOT IN condition 
+
+	SELECT * FROM customer
+	WHERE first_name NOT IN ('John', 'Jake', 'Julie');
+	
+----------------------------------------------------------------------------------------------------
+
+-- LIKE and ILIKE 
+
+-- We've already been able to perform direct comparison again strings, 
+-- such as WHERE first_name = 'John'
+-- But what if we want to match against a general pattern in a string? For example:
+-- All emails ending in '@gmail.com' or all names that begin with an 'A'
+
+-- The LIKE operator allows us to perform pattern matching against string data with the use of wildcard
+-- characters. There are 2 types of wilde card: 
+
+-- Adding percent (%) sign which matches any sequence of characters
+-- Adding underscore (_) which matches any single character inside of the string
+
+-- Example: WHERE name LIKE 'A'% (All names that begin with an 'A')
+		--	WHERE namr LIKE '%a' (All the names end with lower case a)
+		
+-- Using underscore allows us to replace just a single character. For example: 
+-- Get all Mission Impossible films -> WHERE title LIKE 'Mission Impossible_'
+
+-- You can use multiple underscores. Imagine we had version string codes in the format 'Version#A4',
+-- 'Version#B7' and others. -> WHERE value LIKE 'Version#__'
+
+-- We can also co,bine pattern matching operate more complex patterns for example: 
+
+-- WHERE name LIKE '_her%'. This will return the result the person name who have ONE character
+-- before 'her' in names like Cheryl, Theresa, Sherri.
+
+-- How many people name start with letter 'J'? 
+	SELECT COUNT(*) FROM customer
+	WHERE first_name LIKE 'J%';
+	-- 65 Customers
+	
+-- How many people first name start with 'J' and last name with 'S'? 
+
+	SELECT COUNT(*) FROM customer
+	WHERE first_name LIKE 'J%' AND last_name LIKE 'S%';
+	-- 5 customers
+	
+-- You use ILIKE with out case sensitive as LIKE 
+
+	SELECT * FROM customer
+	WHERE first_name ILIKE 'j%' AND last_name ILIKE 's%';
+	
+-- Display the names that countain 'er' 
+
+ 	SELECT * FROM customer 
+	WHERE first_name LIKE '%er%';
+	
+-- adding NOT operator on LIKE 
+
+	SELECT * FROM customer
+	WHERE first_name NOT LIKE '%er%';
+
+-- Another example
+
+	SELECT * FROM customer
+	WHERE first_name LIKE 'A%' AND last_name NOT LIKE 'B%'
+	ORDER BY last_name;
+-- show the result first name with A but not including B
+
+-------------------------------------- General Challenge Tasks -------------------------------------
+
+-- Task 1: How many payment transactions were greater than $5.00? 
+
+	SELECT COUNT(*) FROM payment
+	WHERE amount > 5;
+	-- 3618 transactions
+
+-- Task 2: How many actors have a first name that starts the letter 'P'? 
+
+	SELECT COUNT(*) FROM actor
+	WHERE first_name LIKE 'P%'; 
+	-- There are 5 actors first name with 'P'
+	
+--  Task 3: How many unique district are our customers from? 
+
+	SELECT COUNT(DISTINCT district) FROM address; 
+	-- 378
+	
+-- Task 4: Retrieve the list of names of those distince distict from the previous question.
+
+	SELECT DISTINCT district FROM address;
+	
+-- Task 5: How many films have a rating of R and a replacement cost between $5 and $15? 
+
+	SELECT COUNT(*) FROM film
+	WHERE rating = 'R' AND replacement_cost BETWEEN 5 AND 15;
+	-- 52 films
+	
+-- Task 6: How many films have the word 'Truman' somewhere in title? 
+
+	SELECT COUNT(*) from film
+	WHERE title LIKE ('%Truman%');
+
+
+
+
+
+

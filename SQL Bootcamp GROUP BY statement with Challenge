@@ -1,0 +1,150 @@
+-- Basic syntax for GROUP BY 
+
+--  SELECT category_col, AGG(data_col)
+--	FROM table
+-- 	GROUP BY category_col 
+
+-- The GROUP BY clause must appear right after a FROM or WHERE statement. 
+
+-- Here is the example of using WHERE statement with GROUP BY. Let's say we want to find the category 
+-- not belong to A. 
+
+-- 	SELECT category_col, AGG(data_col)
+-- 	FROM table
+-- 	WHERE category_col != 'A'
+-- 	GROUP BY category_col
+
+-- One of the most important things to realuze when learning about GROUP BY is the following. 
+-- In the actual statement of coolumn must either have an aggregate function call on them or be 
+-- themselvesin the GROUP BY call. What does this mean? 
+
+-- If we using a GROUP BY statement, then if we're se;ecting that particular column just by itself, it
+-- must be included in the GROUP BY statement. Example in following code, we select the cateogory 
+-- column, then that pariticular column must also appear in the GROUP BY statement. 
+
+	-- SELECT category_col, AGG(data_col)
+	-- FROM table 
+	-- GROUP BY category_col
+	
+-- The only expcetion to this is if you are calling some sort of aggregate function the column
+-- itself. In the example code from above, since you are aggregating something on the data column, 
+-- it does not need to be included in the GROUP BY statement. 
+
+-- Here is another example: 
+
+-- SELECT company, division, SUM(sales)
+-- FROM finance_table
+-- GROUP BY company, division; 
+
+-- In the SELECT statement, columns must either have an aggregate finction or be in the GROUP BY call.
+-- Notice again, the sales doesn't appear in the GROUP BY statement, which mean must have aggregate
+-- function associated with it. In the end, this will return total sum of sales per division per 
+-- company. 
+
+-- Keep in mind that WHERE statements should not refer to the aggregation result, so you shouldn't 
+-- be trying to filtering a WHERE statement on some sales in this case. We will see how to this 
+-- by using HAVING statement later on. 
+
+-- SELECT comapny, division, SUM(sales)
+-- FROM finance_table
+-- WHERE division IN('marketing', 'transport')
+-- GROUP BY company, division;
+
+-- You can also combine with ORDER BY to change the order you want to display 
+
+-- SELECT company, SUM(sales)
+-- FROM fianance_table
+-- GROUP BY company
+-- ORDER BY SUM(sales)
+-- LIMIT 5
+
+-----------------------------------------------------------------------------------------------------
+-- check the payment table
+
+	SELECT * FROM payment;
+
+-- Simple GROUP BY statement 
+
+	SELECT customer_id FROM payment 
+	GROUP BY customer_id
+	ORDER BY customer_id;
+	
+-- What customer is spending money in total? 
+
+	SELECT customer_id, SUM(amount) FROM payment
+	GROUP BY customer_id
+	ORDER BY SUM(amount) DESC;
+	
+-- How many transaction? 
+
+	SELECT customer_id, COUNT(amount) FROM payment
+	GROUP BY customer_id 
+	ORDER BY COUNT(amount) DESC;
+	
+-- Use GROUP BY for multiple column (telling total amount of spent per staff per customer)
+
+	SELECT customer_id, staff_id, SUM(amount) FROM payment
+	GROUP BY customer_id, staff_id 
+	ORDER BY customer_id;
+
+-- Using GROUP BY date column 
+
+	SELECT DATE(payment_date), SUM(amount) FROM payment
+	GROUP BY DATE(payment_date)
+	ORDER BY SUM(amount) DESC;
+	
+	
+---------------------------------- GROUP BY Challenge ----------------------------------------------
+
+-- Task 1: We have two staff members, with Staff IDs 1 and 2. We want to give a bonus to the staff 
+-- member that handled the most payments.(Most terms of number of payments processed, not total
+-- dollar amount). How many payment did each staff member and who get;s the bonus? 
+
+	SELECT staff_id,  COUNT(amount) FROM payment
+	GROUP BY staff_id
+	ORDER BY staff_id DESC; 
+	-- staff_id 2 should get the bonus
+	
+-- Task 2: Corporate HQ is conducting a study on the relationship between replacement cost and a
+-- movie MPAA rating. What is the average replacement cost per MPAA? 
+
+	SELECT rating, ROUND(AVG(replacement_cost),2) FROM film
+	GROUP BY rating;
+	-- R = 20.23
+	-- NC-17 = 20.14
+	-- G = 20.12
+	-- PG = 18.96
+	-- PG-13 = 20.40
+	
+	
+--  Task 3: We are running a promotion to reward our top 5 customer with coupons. What are the 
+-- customer ids of top 5 customer by total spend? 
+
+	SELECT customer_id, SUM(amount) FROM payment
+	GROUP BY customer_id 
+	ORDER BY SUM(amount) DESC
+	LIMIT 5;
+
+	-- customer_id 148 = 211.55
+	-- customer_id 526 = 208.58
+	-- customer_id 178 = 194.61
+	-- customer_id 137 = 191.62
+	-- customer_id 144 = 189.60
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

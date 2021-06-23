@@ -1,0 +1,129 @@
+-- In this lecture we will learn about WHERE clause -- 
+
+--  Basic syntax example: 
+
+--SELECT column name 1, column name 2
+--FROM table name
+--WHERE conditions;
+
+-- Basic comparison operators: 
+
+-- Equal (=) 
+-- Greater than (>)
+-- Less than (<) 
+-- Greater than or equal to (>=)
+-- Less than or equal to (<=)
+-- Not Equal to (<>) or (!=)
+
+-- Logical Operators  
+
+-- AND = Both logic have to be true 
+-- OR = Either one logic have to be true 
+-- NOT = Any condition is not true 
+
+	-- Let's Practice and use the customer data -- 
+
+	SELECT * FROM customer;
+
+	-- Who have first name Jared ? -- 
+
+	SELECT * FROM customer
+	WHERE first_name = 'Jared';
+
+ -- Let's try at the film table and try to apply the combine condition and logcial operators --
+ 
+ 	SELECT * FROM film;
+	
+-- Find the rental rates that are higher than $4 -- 
+
+	SELECT * FROM film
+	WHERE rental_rate > 4;
+	
+-- Let'add more condition. Find out rental rate with more than $4 and have high replacement cost 
+-- Greater than or equal to $19.99
+
+	SELECT * FROM film 
+	WHERE rental_rate > 4 AND replacement_cost >= 19.99; 
+
+-- Let's add more condition. Same condition from the previous one but add rating R
+
+	SELECT * FROM film 
+	WHERE rental_rate > 4 AND replacement_cost >= 19.99 
+	AND rating ='R';
+	
+-- You can also grab movie title with same condition -- 
+
+	SELECT title FROM film
+	WHERE rental_rate > 4 AND replacement_cost >= 19.99
+	AND rating ='R';
+
+-- If you want to know how about movie title with same condition with above, simply using COUNT -- 
+
+	SELECT COUNT(title) FROM film
+	WHERE rental_rate > 4 AND replacement_cost >= 19.99
+	AND rating ='R';
+	-- Result: 34 movies -- 
+	
+-- Let's using OR logical condition. This time we want rating R or PG13 
+
+	SELECT title FROM film
+	Where rental_rate > 4 AND replacement_cost >= 19.99 
+	AND rating = 'R' OR rating = 'PG-13'; 
+	
+-- Now how many there are both for rating for R and PG-13 ? 
+
+	SELECT COUNT(title) FROM film 
+	WHERE rental_rate > 4 AND replacement_cost >= 19.99 
+	AND rating = 'R' OR rating = 'PG-13';
+	-- Result: 257 movies 
+	
+-- Let's try condition with not equal to 
+
+	SELECT * FROM film 
+	WHERE rating != 'R';
+	
+----------------------------------- Challenge Tasks -----------------------------------------------
+
+-- We are now focus more on directly asking business related questions, to more realisitcally model
+-- a typical tasks. 
+
+-- Task 1: A customer forgot their wallet at our store! We need to track down their email to inform
+-- them. What is the email for the customer with the name Nancy Thomas? 
+-----------------------------------------------------------------------------------------------------
+-- Check customer info 
+
+	SELECT * FROM customer; 
+	
+-- Get the email address for Nancy Thomas email address using condition 
+
+	SELECT first_name, last_name, email FROM customer
+	WHERE first_name = 'Nancy' AND last_name = 'Thomas';
+	-- Email address for Nancy Thomas is: nancy.thomas@sakilacustomer.org
+	
+-- Task 2: A customer wants to know what the movie "Outlaw Hanky" about. Could you give them the 
+-- description for the movie 'Outlaw Hanky'? 
+
+-- Check the film info 
+	
+	SELECT * FROM film;
+	
+-- Get the movie name and description 
+
+	SELECT title, description FROM film
+	WHERE title = 'Outlaw Hanky';
+	
+	--A Thoughtful Story of a Astronaut And a Composer who must Conquer a Dog in The Sahara Desert
+	
+-- Task 3: A customer is late on their movie return, and we've mailed them a letter to their address
+-- at '259 Ipoh Drive'. We should also call them know. Can you get the phone number for the customer
+-- who lives at '259 Ipoh Drive'? 
+
+-- Get the address info 
+
+	SELECT * FROM address;
+	
+-- type the condition that match to the 259 Ipoh Drive
+
+	SELECT phone FROM address
+	WHERE address = '259 Ipoh Drive';
+	-- Phone number is 419009857119

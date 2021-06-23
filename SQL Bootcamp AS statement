@@ -1,0 +1,58 @@
+-- AS statement 
+
+-- AS clause allow us to create an 'alias' for a columnor result. Other way to say is rename 
+-- the column name what you prefer to be. 
+
+-- Basic syntax 
+
+-- SELECT column_name AS new_name
+-- FROM table
+
+-- You can also use the function on a columns. For example select select the column and then have that 
+-- instead of displaying as some of that column in the data output instead of have display as new_name
+
+-- SELECT SUM(column) AS new_name
+-- FROM table
+
+-- let's try this in DVD rental data
+
+	SELECT amount AS rental_price 
+	FROM payment; 
+	
+-- Another example
+
+	SELECT SUM(amount) AS net_revenue 
+	FROM payment;
+	
+-- remember that the AS operator gets executed at the very end of query, meaning that we cannot use
+-- the 'alias' inisde a WHERE operator. You should use AS statement ONLY in the SELECT statement
+
+	-- Here is the example of using AS statement. It will help to understand what is the ouput result
+	-- displaying by renaming the column. 
+	SELECT COUNT(amount) AS num_transactions
+	FROM payment;
+	
+	-- COmbine with GROUP BY statement and ORDER BY statement and LIMIT 
+	
+	SELECT customer_id, SUM(amount) AS total_spent
+	FROM payment
+	GROUP BY customer_id
+	ORDER BY total_spent DESC
+	LIMIT 5;
+
+	-- Now let's try HAVING statement 
+	
+	--SELECT customer_id, SUM(amount) AS total_spent
+	--FROM payment
+	--GROUP BY customer_id
+	--HAVING total_spent > 100;
+
+	-- You will see that this code does not work because the alias will assigned at the very end. 
+	-- Therefore, you will get error. To solve this issues, you have to put with original column name
+	-- or original function.
+	
+	SELECT customer_id, SUM(amount) AS total_spent
+	FROM payment
+	GROUP BY customer_id
+	HAVING SUM(amount) > 100;
+	

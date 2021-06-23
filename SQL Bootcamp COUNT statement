@@ -1,0 +1,22 @@
+-- Select payment id and check entire data --
+
+SELECT * FROM payment;
+
+-- Use count to find out total number of rows --
+
+SELECT COUNT(*) FROM payment; 
+--We have 14,596 rows--
+
+--How amny rows are there in amount column? -- 
+
+SELECT COUNT(amount) FROM payment;
+-- Should be same result as payment row (14,592)
+
+-- Now go look at the amount column and see how many people are paying for the DVD rental -- 
+
+SELECT amount FROM payment;
+
+-- What is the number of unique amounts or distinct amount paid? -- 
+
+SELECT COUNT (DISTINCT amount) FROM payment; 
+-- 19 -- 
