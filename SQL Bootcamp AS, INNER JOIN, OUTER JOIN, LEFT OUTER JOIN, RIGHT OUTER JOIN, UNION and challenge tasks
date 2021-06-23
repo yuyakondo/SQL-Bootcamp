@@ -1,0 +1,249 @@
+-- INNER JOIN 
+
+-- First of all, what is JOIN operation? JOIN allow us to combine multiple tables together.
+-- The main reason the different JOIN types is to decide how to deal with information only present
+-- in one of the joined tables. 
+
+-- Example situation: Our company is holding a conference for people in the movie rental industry.
+-- We'll have people register online beforehand and then login the day of the conference. 
+
+-- INNER JOIN will result with set of record that match in both tables.In this case, people who did 
+-- registration for the conference and logins who did show to the conference. 
+
+-- Basic syntax for INNER JOIN 
+
+	-- SELECT * FROM Table_A
+	-- INNER JOIN Table_B
+	-- ON TABLE_A.col_match = Table_B.col_match;
+
+-- Here is the example coding from the example situtation 
+
+	-- SELECT * FROM Registrations
+	-- INNER JOIN Logins 
+	-- ON Registration.name = Login.name;
+	
+-- You can also remove the duplication by specifying which column you want. 
+
+	-- SELECT reg_id, Logins.name, log_id
+	-- FROM Regristrations
+	-- INNER JOIN Logins
+	-- ON Registrations.name = Logins.name
+	
+-- Let's do some example with rental DVD data base. Let's try to join the payment table with customer
+-- table in order to get the customer email address associated with a specific payment. 
+
+	SELECT payment_id, payment.customer_id, first_name  -- <- state the column. You have to specify which table if they have duplicate column. In this case you choose customer_id from payment table.
+	FROM payment 										-- <- choose the table 
+	INNER JOIN customer									-- <- select another table that you want to inner join
+	ON payment.customer_id = customer.customer_id;		-- <- join the column that associated with both
+														-- 	  payment table and customer table. So you state
+														--    customer_id column from payment table and 
+														--    customer_id column from customer table. 
+	
+	
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------	
+-- FULL OUTER JOINS
+
+-- There are few different tpyes of OUTER JOINs. This will allow us to sepcify how to deal with
+-- values only present in one of the tables being joined. 
+
+-- OUTER JOIN or FULL OUTER JOIN can grab everything, so the syntax will select all the columns from 
+-- TableA, do a full OUTER JOIN of TableB and then on wherever that column match occurs from TableA
+-- equal to B column match. Basically, grab everything, wherever it's present in both tables or present
+-- only one table. 
+
+-- Basic syntax for OUTER JOINs
+
+	-- SELECT * FROM TableA
+	-- FULL OUTER JOIN TableB
+	-- ON TableA.col_match = TableB.col_match
+
+-- Example code:
+
+	-- SELECT * FROM Registrations 
+	-- FULL OUTER JOIN Logins
+	-- ON Registrations.name = Login.name
+
+-- In the example, Andrew and Bob attend to the confrence but Charlie and David did not showed up. 
+-- In that case, whoever, did not showed up to the conference will fill in as NULL. Also, some people
+-- might participate to the conference without registration. In this case, the value for the registration 
+-- show as NULL but Logins appear with values and name. 
+----------------------------------------------------------------------------------------------------------------
+
+-- FULL OUTER JOIN with WHERE statement
+
+-- We can use WHERE statement in OUTER JOIN when you are order to get rows unique to either table. 
+-- In other words, rows that are not found in both tables. 
+
+-- Basic syntax for OUTER JOIN with WHERE statement 
+
+	-- SELECT * FROM TableA							<- Select on table
+	-- FULL OUTER JOIN TableB 						<- Select second table
+	-- ON TableA.col_match = TableB.col_match		<- Select one column of table from table A and select one column from tablr B
+	-- WHERE TableA.id IS null OR TableB.id IS null <- check is there any null value in table A column or null value in tableB column
+
+-- In this code we are looking for actual values where on of the table id_column is null or the 
+-- other tables side column is null, which is essentially oppposite statement of INNER JOIN.
+
+-- Try with our example: 
+
+	-- SELECT * FROM Registrations 
+	-- FULL OUTER JOIN LOGINS
+	-- ON Registrations.name = Logins.name
+	-- WHERE Registrations.reg_id IS null OR
+	-- Logins.log_id IS null;
+	
+-- Now try with DVD rental data. Imagine that some new privacy rules have been implemented and we want
+-- to make sure what we don't have payment information that's not attached to customer or that we 
+-- don't have some customer information that isn't attach to payment. Essentially, we want to make
+-- sure that all the payments we have is associatef with the cucrent customer, and all the customer
+-- we have associated with some historical payment. 
+
+	SELECT * FROM customer
+	FULL OUTER JOIN payment 
+	ON customer.customer_id = payment.customer_id
+	WHERE customer.customer_id IS null 
+	OR payment.payment_id IS null;
+	
+	-- we show no unique. This mean we are in complience with this new privacy polocy. 
+	
+-- There is another way to confirm. You can take a look at the distinct customer IDs in both customer
+-- table and payment table. 
+
+	SELECT COUNT(DISTINCT customer_id) FROM payment;
+	
+	-- OR 
+	
+	SELECT COUNT(DISTINCT customer_id) FROM customer;
+	
+-- As a result, both number of customer IDs does match however, this does not fully answering the 
+-- question because technically there could have been maybe customer IDs that were letters and 
+-- one table that were 599 unique series of letters, and then the other table could have 599 unique
+-- numbers. So to make sure, we better use FULL OUTER JOIN with IS null statement. 
+
+------------------------------------------------------------------------------------------------------------
+
+-- LEFT OUTER JOIN 
+
+-- A LEFT OUTER JOIN results in the set of records that are in the left table, if there is no match
+-- with the right table, the results are null. 
+
+-- Basic Syntax 
+
+	-- SELECT * FROM TableA
+	-- LEFT OUTER JOIN TableB
+	-- ON TableA.col_match = TableB.col_match;
+	
+-- example code from our example:
+
+	-- SELECT * FROM Registrations
+	-- LEFT OUTER JOIN Logins
+	-- ON Registrations.name = Logins.name;
+	
+-- LEFT OUTER JOIN with WHERE statement. What if we only wanted entires unique to Table A? Those rows
+-- found in Table A and not found in Table B?
+
+	-- SELECT * FROM TableA 
+	-- LEFT OUTER JOIN TableB
+	-- ON TableA.col_match = TableB.col_match
+	-- WHERE TableB.id IS null;
+	
+-- Let's go use Rental DVD data example
+
+	SELECT film.film_id, title, inventory_id, store_id 
+	FROM film
+	LEFT OUTER JOIN inventory 
+	ON inventory.film_id = film.film_id
+	WHERE inventory.film_id IS NULL; 
+	
+	-- We can see that entire column contain NULL which mean we do not have inventory in any store.  
+	
+	--------------------------------------------------------------------------------------------------------
+	
+	-- RIGHT OUTER JOIN 
+	
+	-- RIGHT OUTER JOIN is essentially the same as a LEFT JOIN, except tables are switched. This would
+	-- same as switching the table order in a LEFT OUTER JOIN. 
+	
+	-- Basic Syntax
+	
+		-- SELECT * FROM TableA 
+		-- RIGHT OUTER JOIN TableB
+		-- ON TableA.col_match = TableB.col_match
+		-- WHERE TableA.id IS null;
+--------------------------------------------------------------------------------------------------------------
+-- UNION 
+
+-- UNION operator is used to combine the result-set of two or more SELECT statements. It's bascially
+-- serves directly concatenate two result together, essesstially "pasting" them together.
+
+-- Basic Syntax: 
+
+	-- SELECT Column_name(s) FROM table1
+	-- UNION
+	-- SELECT column_name(s) FROM table2
+	
+-- Example code: 
+
+	-- SELECT * FROM Sales_2021_Q1
+	-- UNION 
+	-- SELECT * FROM Sales_2021_Q2
+	-- ORDER BY name; 
+	
+
+---------------------------------------------- JOIN Challenge ------------------------------------------
+
+-- Task 1: Calfornia sales tax laws have changed and we need alert our customer to this through
+-- email. What are emails of the customer who live in California? 
+
+	-- Check info about customer
+	
+		SELECT * FROM customer; 
+		
+	-- Check address info
+	
+		SELECT * FROM address;
+		
+	-- seems address_ id is the key column 
+	
+	SELECT email, district FROM customer
+	INNER JOIN address
+	ON customer.address_id = address.address_id
+	WHERE district = 'California'; 
+	
+	-- In total there are 9 customers
+	
+-- Task 2: A customer walks in and is a huge fan of the actor "Nick Wahlberg" and wants to know 
+-- which movies he is in. Get a list of all the movies "Nich Wahlberg" has been in. 
+
+	-- check info for film
+	
+		SELECT * FROM film; -- Have film_id
+		
+	-- check info for actor
+		
+		SELECT * FROM actor;  -- Have actor_id, first_name, last_name
+		
+	-- check info for film_actor
+	
+		SELECT * FROM film_actor; -- Have film_id, actor_id
+		
+	-- seems we can use UNION to combine film id and film actor. We will use multiple JOINS
+		 
+	SELECT title, first_name, last_name FROM actor
+	INNER JOIN film_actor
+	ON actor.actor_id = film_actor.actor_id
+	INNER JOIN
+	film
+	ON film_actor.film_id = film.film_id
+	WHERE first_name = 'Nick' AND last_name ='Wahlberg'; 
+	-- There are 25 movies 
+
+		
+		
+		
+		
+		
+		
+		
+		
