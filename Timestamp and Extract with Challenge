@@ -1,0 +1,152 @@
+-- Part 1 - Timestamps and Extract 
+
+-- We are focusing on dsplaying current time and informaiton. These function will be more 
+-- useful when creating own tables databases, rather than querying a database. 
+
+-- We've already seen taht PostgreSQL can hold date and time information. Keep in mind that there are 
+-- different subsets of data types that refers to things like storing time information or date 
+-- information. There four main data types:
+
+	--	TIME <- contain only time in hrs, min, and sec
+	-- 	DATE <- contain only date in month, date, and year 
+	--  TIMESTAMP <- combined data types on TIME and DATE information 
+	-- 	TIMESTAMPTZ <- contains date, time, and timezones information 
+
+-- Let's explore functions and operations related to these specific data types: 
+
+	-- TIMEZONE
+	-- NOW
+	-- TIMEOFDAY
+	-- CURRENT_TIME
+	-- CURRENT_DATE
+	
+	-- Let's try these operations functions at Rental DVD database 
+	
+		-- use SHOW ALL to display entire run time paramters of your data
+		
+		SHOW ALL;
+		
+		-- Display your current timezone 
+		
+		SHOW TIMEZONE;
+		
+		-- Use NOW() to display what is your current time and date 
+		
+		SELECT NOW();
+		
+		-- display timestamp as string
+		
+		SELECT TIMEOFDAY();
+		
+		-- display only time
+		
+		SELECT CURRENT_TIME;
+		
+		-- display only date 
+		
+		SELECT CURRENT_DATE;
+		
+-----------------------------------------------------------------------------------------------------
+
+-- Part 2 - Timestamps and Extract 
+
+-- Let's explore extracting information from a time based data type using: 
+
+	-- EXTRACT() 
+	-- AGE()
+	-- TO_CHAR()
+	
+
+-- EXTRACT() allows you to "extract" or obtain a sub-component of a date value. you can extract:
+	
+	-- YEAR
+	-- MONTH
+	-- DAY
+	-- WEEK
+	-- QUATER 
+	
+-- You can use these if you have a full timestamp and you want the year component of it, you can 
+-- extract just the year. 
+
+	--Basic syntax: 
+	
+	-- EXTRACT(YEAR FROM date_col)
+	
+-- AGE() function will calculate and returns the current age given a timestamp. So simply you just
+-- pass on some timestamp column into the age function and they will return Year, month, days, time info 
+
+	-- basic syntax
+		
+	-- AGE(date_col)
+	
+-- TO_CHAR() funtion is general functio to covert data types into text. It is very useful for 
+-- timestamp formatting in particular. 
+
+	-- Basic syntax 
+	
+	-- TO_CHAR(date_col, 'mm-dd-yyyy')
+
+-- DVD rental data base examples:
+
+	SELECT * FROM payment; 
+	
+-- use EXTRACT function and display the years
+
+	SELECT EXTRACT(YEAR FROM payment_date)
+	FROM payment;
+
+-- use EXTRACT function and display the month
+
+	SELECT EXTRACT(MONTH FROM payment_date) AS pay_month
+	FROM payment;
+	
+-- use EXTRACT function and display the quarters
+
+	SELECT EXTRACT(QUARTER FROM payment_date) AS pay_quarter
+	FROM payment;
+	
+-- How old particular timestamp date was regards to our current date? 
+
+	SELECT AGE(payment_date) FROM payment; 
+	
+-- TO_CHAR 
+
+	SELECT TO_CHAR(payment_date, 'MONTH - YYYY')
+	FROM payment;
+	
+-- Change to US requirement 
+
+	SELECT TO_CHAR(payment_date, 'mm/dd/YYYY')
+	FROM payment;
+	
+-- Chang to European standard 
+
+	SELECT TO_CHAR(payment_date, 'DD/MM/YYYY')
+	FROM payment;
+
+--------------------------------------- Challenge Tasks -------------------------------------------
+
+-- Task 1: During which month did payment occur? Format your answer to return back the full month
+-- name. 
+
+	SELECT DISTINCT (TO_CHAR(payment_date, 'MONTH'))
+	FROM payment;
+	
+-- Task 2: How many payment occured on a Monday? 
+
+	SELECT EXTRACT(dow FROM payment_date),
+	COUNT(payment_date)
+	FROM payment
+	GROUP BY EXTRACT (dow FROM payment_date); 
+	
+	-- OR 
+	
+	SELECT COUNT(*) FROM payment
+	WHERE EXTRACT(dow FROM payment_date) = 1
+	
+	-- Ans: 2948
+
+	
+
+
+
