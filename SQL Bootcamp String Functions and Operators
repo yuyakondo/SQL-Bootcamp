@@ -1,0 +1,32 @@
+-- Notes: All of these functions are stated in PostgreSQL documentation. There are more functions and
+-- operators than stated in this document. 
+
+-- Mathematical functions and operators 
+	
+	-- simple percentage calculation 
+	SELECT ROUND(rental_rate/replacement_cost, 2)*100 AS percent_cost
+	FROM film; 
+	
+-- String functions and operators 
+
+	SELECT * FROM customer;
+	
+-- use length function and display number of letters for the customer first name
+
+	SELECT LENGTH(first_name) FROM customer; 
+	
+-- concatenate the string 
+
+	SELECT first_name ||' '|| last_name AS full_name
+	FROM customer;
+	
+-- change to full UPPER case
+
+	SELECT UPPER(first_name) ||' '|| UPPER (last_name) AS FULL_NAME
+	FROM customer;
+	
+-- create email address 
+	-- lower case entire first name, select first_name first letter
+	SELECT LOWER(LEFT(first_name,1)) || LOWER(last_name) || '@gmail.com' 
+	AS custom_email
+	FROM customer;

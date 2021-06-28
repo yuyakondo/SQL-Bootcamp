@@ -1,0 +1,132 @@
+-- Sub Query 
+
+-- Sub Query allows you to construct complex queries, essentially performing a query on the results
+-- of another query. The syntax is straightforward and involves two SELECT statements. 
+
+-- Imagine a table consisting of student names and their scores
+
+	-- standard Query will be following: 
+		
+		-- SELECT student, grade
+		-- FROM test_scores;
+
+	-- Find out average grade of entire class 
+		
+		-- SELECT AVG(grade)
+		-- FROM test_scores;
+		
+	-- Now here is the question. How can we get a list of student who scored better than the average?
+	
+	-- There are 2 steps to do this. First, get the average grade, then compare the rest of the table 
+	-- against it. And here we will use Sub Query
+		
+		-- SELECT student, grade 
+		-- FROM test_score
+		-- WHERE grade > (SELECT AVG(grade)
+		-- FROM test_scores)
+		
+	
+	-- The subquery is performed first since it is inside the parenthesis. 
+	-- We can also use the IN operator in conjunction with a subquery to check against multiple result
+	-- returned. 
+	
+		-- Let's say we want to grab the honor roll student from the test score. (we can also use JOIN)
+	
+		-- SELECT student, grade
+		-- FROM test_scores
+		-- WHERE student IN (SELECT student FROM honor_role_table)
+		
+	
+	-- The EXISTS() operator is used to test for existence of rows in a subquery. 
+	-- Typically a subquery is passed in the EXISTS() functio to check if any rows are returned 
+	-- with the subquery. 
+	
+		-- typical syntax: 
+		
+			-- SELECT column_name
+			-- FROM table
+			-- WHERE EXISTS
+			--(SELECT column_name FROM table_name
+			-- WHERE condition); 
+	
+	-- Now let's try at DVD rental data 
+		
+	-- Check the film table
+		SELECT * FROM film;
+		
+	-- What is average rate of retal rate? 
+		
+		SELECT ROUND(AVG(rental_rate), 2) FROM film;
+		
+	-- Now let's try to use sub-query and find out what are the movie titles that are above than 
+	-- average rental rate? 
+	
+		SELECT title, rental_rate 
+		FROM film 
+		WHERE rental_rate > (SELECT AVG(rental_rate) FROM film);
+		
+	-- we can also use COUNT to count the amount of movies that are higher than average rental rate
+		SELECT COUNT(*)
+		FROM film 
+		WHERE rental_rate > (SELECT AVG(rental_rate) FROM film);
+		-- 659 
+	
+-- Unitl here we saw that the sub-query could return the single value. Which mean, you can also use 
+-- other conditions such as less than, more than, not equal to, equal to and others. 
+
+-- However, if you want to return multiple values, you have to use IN operator. 
+-- Let;s say you want to find out that the return date of film with title between May 29th-30th
+
+	-- Finding out return DVD between Mayb 29th to 30th 
+	SELECT * FROM rental
+	WHERE return_date BETWEEN '2005-05-29' AND '2005-05-30';
+	
+	-- Now let's try to JOIN the inventory id from Inventory table and inventory_id from rental table
+	
+	SELECT inventory.film_id FROM rental
+	INNER JOIN inventory ON inventory.inventory_id = rental.inventory_id
+	WHERE return_date BETWEEN '2005-05-29' AND '2005-05-30'; 
+	
+	-- You got the film_id which is joined with rental table and inventory table. To display the
+	-- title of the movie, you can use sub-query with IN operator 
+	
+	SELECT film_id, title FROM film
+	WHERE film_id IN
+	(SELECT inventory.film_id FROM rental
+	INNER JOIN inventory ON inventory.inventory_id = rental.inventory_id
+	WHERE return_date BETWEEN '2005-05-29' AND '2005-05-30')
+	ORDER BY film_id;
+		
+-- Finally. let's use EXISTS() operator in the subquery. Imagine we wanted to find the customers
+-- who have at least one payment whose amount greater than 11, and we actually want grab first name
+-- and last name of those customer. To do this, we can use EXISTS() operators following: 
+
+	SELECT first_name, last_name 
+	FROM customer AS c
+	WHERE EXISTS
+	(SELECT * FROM payment AS p
+	WHERE p.customer_id = c.customer_id 
+	AND amount > 11);
+	
+-- if you want to find out opposite result, you can use NOT EXISTS
+
+
+	SELECT first_name, last_name 
+	FROM customer AS c
+	WHERE NOT EXISTS
+	(SELECT * FROM payment AS p
+	WHERE p.customer_id = c.customer_id 
+	AND amount > 11);
+	
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
