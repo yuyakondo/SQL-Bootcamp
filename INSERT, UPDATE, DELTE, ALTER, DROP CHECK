@@ -1,0 +1,345 @@
+-- INSERT 
+
+-- INSERT allows you to add in rows to a table, 
+
+	-- General sybtax: 
+	
+	-- INSERT INTO table(column1,column2,...)
+	-- VALUES 
+	-- (value1, value2),
+	-- (value1, value2)
+	
+-- You can also have a syntax for inserting values from another table: 
+
+	-- INSERT INTO table(column1, column2,...)
+	-- SELECT column1, column2,...
+	-- FROM another_table 
+	-- WHERE condition;
+	
+-- Keep in mind, the inserted row values must match up for the table, including constraints. If one of your constraints was the column is not 
+-- null, then you must provide the value as you insert otherwise you will get error. 
+
+-- if you grabbing information from another table and inserting it into your table that you're currently using then, you must make sure that 
+-- those actual columns also match up for things such as data type. 
+
+-- Also, SERIAL columns do need to be provided a value. SERIAL is a sequence, so it's goin to automatically update the next available interger 
+-- for that row. 
+
+	--Insert account information
+	INSERT INTO account(username, password, email, created_on)
+	VALUES
+	('Jose', 'password', 'jose@mail.com', CURRENT_TIMESTAMP);
+	
+	--check results
+	SELECT * FROM account;
+	
+	-- adding job name into job table
+	INSERT INTO job (job_name)
+	VALUES
+	('Astronaut');
+	
+	-- add another job name into table 
+	
+	INSERT INTO job(job_name)
+	VALUES
+	('President');
+	SELECT * FROM job;
+	
+	-- check result 
+	SELECT * FROM job;
+	
+	-- add values into job account table 
+	
+	INSERT INTO account_job(user_id, job_id, hire_date)
+	VALUES
+	(1,1, CURRENT_TIMESTAMP);
+	
+	--check result 
+	
+	SELECT * FROM account_job;
+	
+----------------------------------------------------------------------------------------------------------------------------------------------
+
+-- UPDATE 
+
+-- The UPDATE keywords allows for the changing of values of the columns in a table. 
+
+	-- GENERAL Syntax: 
+	
+	-- UPDATE table
+	-- SET column1 = value1,
+	-- column2 = value2,...
+	-- WHERE
+	-- condition;
+	
+-- Example: 
+
+	UPDATE account
+	SET last_login = CURRENT_TIMESTAMP
+	WHERE last_login IS NULL; 
+	
+-- the code above shows if the last login value contain NULL, update to current timestamp. 
+
+-- You can also reset everything without using WHERE condition. 
+
+	UPDATE account
+	SET last_login = CURRENT_TIMESTAMP; 
+	
+-- You can also apply into UPDATE the JOIN table 
+
+	-- UPDATE TableA 
+	-- SET orginal_col = TableB.new_col 
+	-- FROM tableB 
+	-- WHERE tableA.id = TableB.id; 
+	
+-- If you want to see particuluar columns taht were affected, you can set the command, like update account table. Using RETURNING 
+-- will return the result that were actually affected and you can return all the columns or subset of column. 
+
+	UPDATE account
+	SET last_login = created_on 
+	RETURNING account_id, last_login; 
+	
+	
+-- let's try it with account table
+
+	SELECT * FROM account;
+	
+-- we can see that last login column contain NULL values. Let's update this column 
+
+	UPDATE account
+	SET last_login = CURRENT_TIMESTAMP;
+
+-- Let's try to match the created on column and last_login 
+
+	UPDATE account 
+	SET last_login = created_on;
+
+-- let's try update the two table (update join)
+
+	UPDATE account_job
+	SET hire_date = account.created_on
+	FROM account
+	WHERE account_job.user_id = account.user_id;
+
+-- using RETURNING 
+
+	UPDATE account
+	SET last_login = CURRENT_TIMESTAMP 
+	RETURNING email, created_on, last_login;
+
+----------------------------------------------------------------------------------------------------------------------------------------------
+
+-- DELETE Clause
+
+-- We can use the DELETE caluse to remove rows from a table. 
+
+	-- Basic syntax 
+	
+	-- DELETE FROM table
+	-- WHERE row_id = 1
+	
+-- We can delete rows based on their presence in other tables
+
+	-- DELETE FROM tableA
+	-- USING tableB 
+	-- WHERE tableA.id = TableB.id 
+	
+-- And we can also delete entire table following: 
+
+	-- DELETE FROM table
+	
+-- Similiar to the UPDATE command, you can also add in a RETURNING call to return rows that were removed
+
+	SELECT * FROM job; 
+	
+	-- adding some data in job table 
+	
+	INSERT INTO job(job_name)
+	VALUES
+	('Finance');
+	
+-- deleting finance job 
+
+	DELETE FROM job
+	WHERE job_name = 'Finance'
+	RETURNING job_id, job_name;
+	
+----------------------------------------------------------------------------------------------------------------------------------------------
+-- ALTER Clause
+
+-- The ALTER clause allows for changes to an existing table structure, such as: 
+
+	-- Adding, dropping, or renaming columns 
+	-- Changing a columns data type 
+	-- Set DEFAULT values for a column 
+	-- Add CHECK constrants 
+	-- Rename table 
+	
+-- General syntax 
+
+	-- ALTER TABLE table_name [action] <- some sort of action call 
+	
+-- Example 1: Adding column 
+
+	-- ALTER TABLE table_name
+	-- ADD COLUMN new_col TYPE <- name the new column, and state the data type 
+	
+-- Example 2: Removing columns
+
+	-- ALTER TABLE table_name
+	-- DROP COLUMN col_name  <- name the column you want to drop
+	
+-- Example 3: Alter constraints 
+
+	-- ALTER TABLE table_name
+	-- ALTER COLUMN col_name
+	-- SET DEFAULT 
+	
+-- Drop the default values 
+
+	-- ALTER TABLE table_name
+	-- ALTER COLUMN col_name
+	-- Drop DEFAULT    
+	
+-- Remove or add in NOT NULL constrain 
+
+	-- ALTER TABLE table_name
+	-- ALTER COLUMN col_name
+	-- SET NOT NULL
+	
+
+-- drop the NOT NULL constrain 
+
+	-- ALTER TABLE table_name
+	-- ALTER COLUMN col_name
+	-- DROP NOT NULL
+	
+-- add the general constrain 
+
+	-- ALTER TABLE table_name
+	-- ALTER COLUMN col_name
+	-- ADD CONSTRAINT constraint name
+	
+	
+	
+	-- Create the new table 
+	
+	CREATE TABLE information(
+	info_id SERIAL PRIMARY KEY,
+	title VARCHAR(500) NOT NULL,
+	person VARCHAR (50)NOT NULL UNIQUE
+	);
+
+	-- check the new table
+	
+	SELECT * FROM information;
+
+	-- Use ALTER clause to rename the table
+	
+	ALTER TABLE information
+	RENAME TO new_info;
+	
+	-- to check the table again with new name
+	
+	SELECT * FROM new_info;
+	
+	-- Use ALTER to rename the column name 
+	
+	ALTER TABLE new_info
+	RENAME COLUMN person TO people;
+	
+	-- DROP NOT NULL values in new_info people column so you can add in values later 
+	
+	ALTER TABLE new_info
+	ALTER COLUMN people DROP NOT NULL;
+	
+	-- Now insert the values into title 
+	
+	INSERT INTO new_info(title)
+	VALUES
+	('Some new title');
+
+----------------------------------------------------------------------------------------------------------------------
+
+-- DROP keyword
+
+-- DROP allows for the complete removal of a column in a table. 
+
+-- In PostgreSQL this will also automatically remove all of its indexes and contraints involving the column. 
+-- However, it will not remove columns used in views, triggers, or stored procedures without the additional CASCADE
+-- clause. 
+
+
+	-- General syntax for dropping the column 
+	
+		-- ALTER TABLE table_name
+		-- DROP COLUMN col_name
+		
+	-- removing all dependencies 
+	
+		-- ALTER TABLE table_name
+		-- DROP COLUMN col_names CASCADE
+		
+	-- You will get error if you don't state correct table. To avoid this you will use IF EXISTS keyword clause 
+	
+		-- ALTER TABLE table_name
+		-- DROP COLUMN IF EXSITS col_name
+		
+	-- Dropping multiple columns 
+	
+		-- ALTER TABLE table_name
+		-- DROP COLUMN col_1,
+		-- DROP COLUMN col_2,
+		--.....
+		
+	
+	-- check table 
+	
+	SELECT * FROM new_info;
+	
+	-- Let's drop people column 
+	
+	ALTER TABLE new_info
+	DROP COLUMN people;
+	
+--------------------------------------------------------------------------------------------------------------------
+
+-- CHECK Constraint
+
+-- The CHECK constraint allows us to create more customized constraints that adhere to a certain condition. 
+-- For example, making sure all inserted integer values fall below a certain threshold. 
+
+	-- General syntax: 
+	
+	-- CREATE TABLE example(
+	-- ex_id SERIAL PRIMARY KEY,
+	-- age SMALLINT CHECK (age > 21), 				<- condition to check the person is older than age 21
+	-- parent_age SMALLINT CHECK(parent_age > age));
+	
+	
+	--Example 
+	
+	CREATE TABLE employees(
+	emp_id SERIAL PRIMARY KEY,
+	first_name VARCHAR(50) NOT NULL,
+	last_name VARCHAR(50) NOT NULL,
+	birth_date DATE CHECK (birth_date > '1900-01-01'),
+	hire_date DATE CHECK (hire_date > birth_date),
+	salary INTEGER CHECK (salary > 0));
+
+	-- Check table
+	
+	SELECT * FROM employees;
+
+	--insert some data 
+	
+	INSERT INTO employees(
+	first_name, last_name, birth_date, hire_date, salary
+	)
+	VALUES
+	('Mike', 'Chan', '1990-01-01', '2010-01-01', 100)
+
+
+
+
+
