@@ -1,0 +1,89 @@
+
+SELECT * FROM customer;
+
+SELECT customer_id, 
+CASE 
+	WHEN(customer_id <= 100) THEN 'Premium'
+	WHEN(customer_id BETWEEN 100 AND 200) THEN 'Diamond'
+	ELSE 'Normal' 
+END AS customer_class
+FROM customer;
+
+-- raffle promotion 
+
+SELECT customer_id, 
+CASE customer_id
+	WHEN 2 THEN 'WINNER'
+	WHEN 5 THEN '2nd Place'
+	ELSE 'Normal'
+END AS raffle_results
+FROM customer;
+
+-- check film table 
+
+	SELECT * FROM film;
+	
+SELECT rental_rate FROM film;
+
+SELECT rental_rate,
+CASE rental_rate
+	WHEN 0.99 THEN 1 
+	ELSE 0
+END AS edited_rental_rate
+FROM film;
+
+
+-- How many 0.99 movie have? 
+
+	SELECT 
+	SUM(CASE rental_rate
+	   WHEN 0.99 THEN 1
+	   ELSE 0 
+	   END) AS number_of_bargains
+	FROM film;
+	
+-- Although, this is not useful because we can use GROUP BY other way however, it will be useful when we have 
+-- multiple column. 
+
+	SELECT 
+	SUM(CASE rental_rate
+	   WHEN 0.99 THEN 1
+	   ELSE 0 
+	   END) AS bargains,
+	   
+	  SUM(CASE rental_rate
+		 WHEN 2.99 THEN 1
+		 ELSE 0
+		 END) AS regular,
+	
+	SUM(CASE rental_rate
+		 WHEN 4.99 THEN 1
+		 ELSE 0
+		 END) AS Premium
+	FROM film;
+	
+---------------------------------------------------------------------------------------------------------------------
+
+-- Case Challenge tasks 
+
+-- Task 1 - We want to know and compare the various amounts of films we have per movie rating. Use CASE and the 
+-- dvd rental database to re-create the table. 
+
+	-- check the film table
+	
+	SELECT * FROM film;
+
+-- COUNT the number of rating R, PG, and PG-13
+	SELECT
+	SUM(CASE rating
+		WHEN 'R' THEN 1 ELSE 0END) AS R,
+		
+	SUM(CASE rating 
+	   WHEN 'PG' THEN 1 ELSE 0 END) AS PG, 
+	
+	SUM(CASE rating
+		WHEN 'PG-13' THEN 1 ELSE 0 END) AS PG13
+	   
+	FROM film; 
+
+	
